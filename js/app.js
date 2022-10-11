@@ -9,7 +9,7 @@ class MainScene extends Phaser.Scene {
         // Cargo el json del mapa
         this.load.image('tiles', './assets/spritesheet.png');
         this.load.tilemapTiledJSON('map', './assets/ground.json');
-        this.load.spritesheet('player', './assets/sprites/penguin.png', {frameWidth: 72, frameHeight: 64});
+        this.load.spritesheet('player', './assets/sprites/penguin.png', {frameWidth: 62, frameHeight: 64});
     }
  
     create(){
@@ -38,7 +38,7 @@ class MainScene extends Phaser.Scene {
 
         this.anims.create({
             key: 'jump',
-            frames: this.anims.generateFrameNumbers('player', {start: 0, end: 2}),
+            frames: this.anims.generateFrameNumbers('player', {start: 0, end: 3}),
             frameRate: 8,
             repeat: -1
         });
@@ -54,23 +54,30 @@ class MainScene extends Phaser.Scene {
         /* Colitions */
             // Para la colicion defino primero la colsion con la capa entera y luego especifico el Id del objeto
             this.physics.add.collider(player, layer);
-            layer.setCollisionBetween(0, 3);
+            layer.setCollisionBetween(0, 4);
         /* --- */
     }
 
     update(){
         let scanner = this.input.keyboard.createCursorKeys();
         let velocityX = 160;
+        let velocityY = -300;
         if (scanner.left.isDown){
-            player.setVelocityX(velocityX);
+            player.setVelocityX(-velocityX);
             player.anims.play('right', true);
             player.flipX = true;
         }else if (scanner.right.isDown){
-            player.setVelocityX(-velocityX);
+            player.setVelocityX(velocityX);
             player.anims.play('right', true);
+            player.flipX = false;
         }else {
             player.setVelocityX(0);
             player.anims.play('iddle', true);
+        }
+
+        if (scanner.up.isDown && player.body.onFloor()){
+            player.setVelocityY(velocityY);
+            player.anims.play('jump', true);
         }
     }
 }
