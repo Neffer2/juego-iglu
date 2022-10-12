@@ -16,6 +16,7 @@ class MainScene extends Phaser.Scene {
         this.load.image('igloo', './assets/Object/Igloo.png');
         this.load.image('tree2', './assets/Object/Tree_2.png');
         this.load.image('icebox', './assets/Object/IceBox.png');
+        this.load.image('bg', './assets/BG/BG.png');
     }
  
     create(){
@@ -24,15 +25,18 @@ class MainScene extends Phaser.Scene {
         // Añado el tileset (las imagenes). Aquí se necesito el nombre del tileset en Tiled y la llave del preload
             const tileset = map.addTilesetImage("tiles1","tiles");
         // Añado las capas. Utilizo el nombre de la capa en Tiled, el tileset que acabo de añadir, y las coordenadas x & y
-            const layer2 = map.createLayer("sky", tileset, 0, 0);
-            const layer1 = map.createLayer("water", tileset, 0, 0);
-            const layer = map.createLayer("ground", tileset, 0, 0);
-        // NOTA: El mapa de Tield debe tener el calculo de bloques para tener el mismo tamaño del proyecto.
+            // const layer2 = map.createLayer("sky", tileset, 0, 0);
+            // NOTA: El mapa de Tield debe tener el calculo de bloques para tener el mismo tamaño del proyecto.
+            
+            /* env */
+            this.add.image(0, 0, 'bg').setOrigin(0, 0).setScrollFactor(0.5);;
+            // const layer1 = map.createLayer("water", tileset, 0, 0);
+            const layer = map.createLayer("ground", tileset, 0, 260);
+            layer.setScale(.5);
 
-        /* env */
-            this.add.image(590, 188, 'tree2').setScale(.5);
+            this.add.image(354, 360, 'tree2').setScale(.2);
 
-            igloo = this.physics.add.image(115, 334, 'igloo').setScale(.4, .5);
+            igloo = this.physics.add.image(55, 435, 'igloo').setScale(.2);
             igloo.flipX = true;
             igloo.setImmovable(true);
             igloo.body.allowGravity = false;
@@ -42,9 +46,14 @@ class MainScene extends Phaser.Scene {
         /* --- */
 
         /* Player */
-            player = this.physics.add.sprite(384, 200, 'player');
-            player.setCollideWorldBounds(true);
+            player = this.physics.add.sprite(384, 200, 'player').setScale(.5);
+            // player.setCollideWorldBounds(true);
             player.setSize(64, 58, false);
+            /* --- */
+            
+            /* camera */
+            this.cameras.main.setBounds(0, 0, 3840, 512);
+            this.cameras.main.startFollow(player, true);
         /* --- */
 
         /* Animations */
@@ -86,11 +95,11 @@ class MainScene extends Phaser.Scene {
         let velocityX = 160;
         let velocityY = -320;
         if (scanner.left.isDown){
-            player.setVelocityX(-velocityX);
+            player.setVelocityX(-Math.round(velocityX));
             player.anims.play('right', true);
             player.flipX = true;
         }else if (scanner.right.isDown){
-            player.setVelocityX(velocityX);
+            player.setVelocityX(Math.round(velocityX));
             player.anims.play('right', true);
             player.flipX = false;
         }else {
@@ -99,7 +108,7 @@ class MainScene extends Phaser.Scene {
         }
 
         if (scanner.up.isDown && player.body.onFloor()){
-            player.setVelocityY(velocityY);
+            player.setVelocityY(Math.round(velocityY));
             player.anims.play('jump', true);
         }
     }
@@ -111,7 +120,7 @@ const config = {
     type: Phaser.AUTO,
     parent: 'game-container',
     width: 768,
-    height: 512 ,
+    height: 512,
     scene: [MainScene],
     scale: {
         // mode: Phaser.Scale.FIT
@@ -119,7 +128,7 @@ const config = {
     physics: {
         default: 'arcade',
         arcade: {
-            debug: false,
+            debug: true,
             gravity: { y: 350 }
         }
     }
