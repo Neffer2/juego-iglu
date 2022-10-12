@@ -1,4 +1,6 @@
 let player; 
+let igloo;
+let iceBox;
 
 class MainScene extends Phaser.Scene {
     constructor(){
@@ -9,7 +11,11 @@ class MainScene extends Phaser.Scene {
         // Cargo el json del mapa
         this.load.image('tiles', './assets/spritesheet.png');
         this.load.tilemapTiledJSON('map', './assets/ground.json');
-        this.load.spritesheet('player', './assets/sprites/penguin.png', {frameWidth: 62, frameHeight: 64});
+        this.load.spritesheet('player-jump', './assets/sprites/jump.png', {frameWidth: 59, frameHeight: 64});
+        this.load.spritesheet('player-walk', './assets/sprites/walk.png', {frameWidth: 59, frameHeight: 64});
+        this.load.image('igloo', './assets/Object/Igloo.png');
+        this.load.image('tree2', './assets/Object/Tree_2.png');
+        this.load.image('icebox', './assets/Object/IceBox.png');
     }
  
     create(){
@@ -23,29 +29,42 @@ class MainScene extends Phaser.Scene {
             const layer = map.createLayer("ground", tileset, 0, 0);
         // NOTA: El mapa de Tield debe tener el calculo de bloques para tener el mismo tamaño del proyecto.
 
-        /* Player */
-            player = this.physics.add.sprite(384, 200, 'player');
+        /* env */
+            this.add.image(590, 188, 'tree2').setScale(.5);
+
+            igloo = this.physics.add.image(115, 334, 'igloo').setScale(.4, .5);
+            igloo.flipX = true;
+            igloo.setImmovable(true);
+            igloo.body.allowGravity = false;
+
+            iceBox = this.physics.add.image(250, 100, 'icebox').setScale(.4);
+            iceBox.setCollideWorldBounds(true);
         /* --- */
 
+        /* Player */
+            player = this.physics.add.sprite(384, 200, 'player');
+            player.setCollideWorldBounds(true);
+            player.setSize(64, 58, false);
+        /* --- */
 
         /* Animations */
         this.anims.create({
             key: 'right',
-            frames: this.anims.generateFrameNumbers('player', {start: 3, end: 6}),
+            frames: this.anims.generateFrameNumbers('player-walk', {start: 0, end: 3}),
             frameRate: 8,
             repeat: -1
         });
 
         this.anims.create({
             key: 'jump',
-            frames: this.anims.generateFrameNumbers('player', {start: 0, end: 3}),
+            frames: this.anims.generateFrameNumbers('player-jump', {start: 0, end: 1}),
             frameRate: 8,
             repeat: -1
         });
 
         this.anims.create({
             key: 'iddle',
-            frames: this.anims.generateFrameNumbers('player', {start: 3, end: 3}),
+            frames: this.anims.generateFrameNumbers('player-walk', {start: 0, end: 0}),
             frameRate: 8,
             repeat: -1
         });
@@ -54,14 +73,18 @@ class MainScene extends Phaser.Scene {
         /* Colitions */
             // Para la colicion defino primero la colsion con la capa entera y luego especifico el Id del objeto
             this.physics.add.collider(player, layer);
+            this.physics.add.collider(iceBox, layer);
             layer.setCollisionBetween(0, 4);
+            layer.setCollisionBetween(12, 16);
+            this.physics.add.collider(player, igloo);
+            this.physics.add.collider(player, iceBox);
         /* --- */
     }
 
     update(){
         let scanner = this.input.keyboard.createCursorKeys();
         let velocityX = 160;
-        let velocityY = -300;
+        let velocityY = -320;
         if (scanner.left.isDown){
             player.setVelocityX(-velocityX);
             player.anims.play('right', true);
@@ -96,7 +119,7 @@ const config = {
     physics: {
         default: 'arcade',
         arcade: {
-            debug: true,
+            debug: false,
             gravity: { y: 350 }
         }
     }
