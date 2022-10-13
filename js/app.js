@@ -1,6 +1,7 @@
 let player; 
 let igloo;
 let iceBox;
+let tree_1;
 
 class MainScene extends Phaser.Scene {
     constructor(){
@@ -14,10 +15,22 @@ class MainScene extends Phaser.Scene {
         this.load.spritesheet('player-jump', './assets/sprites/jump.png', {frameWidth: 59, frameHeight: 64});
         this.load.spritesheet('player-walk', './assets/sprites/walk.png', {frameWidth: 59, frameHeight: 64});
         this.load.image('igloo', './assets/Object/Igloo.png');
+        this.load.image('tree1', './assets/Object/Tree_1.png');
         this.load.image('tree2', './assets/Object/Tree_2.png');
         this.load.image('icebox', './assets/Object/IceBox.png');
+        this.load.image('crystal', './assets/Object/Crystal.png');
         this.load.image('bg', './assets/BG/BG.png');
-    }
+
+        loadFont('Snowtop Caps', './assets/fonts/Snowtop-Caps.ttf');
+        function loadFont(name, url) {
+            var newFont = new FontFace(name, `url(${url})`);
+            newFont.load().then(function (loaded) {
+                document.fonts.add(loaded);
+            }).catch(function (error) {
+                return error;
+            });
+        }
+    }   
  
     create(){
         // Creo el tilemap y asigno llave y dimensiones
@@ -25,28 +38,33 @@ class MainScene extends Phaser.Scene {
         // Añado el tileset (las imagenes). Aquí se necesito el nombre del tileset en Tiled y la llave del preload
             const tileset = map.addTilesetImage("tiles1","tiles");
         // Añado las capas. Utilizo el nombre de la capa en Tiled, el tileset que acabo de añadir, y las coordenadas x & y
-            // const layer2 = map.createLayer("sky", tileset, 0, 0);
+            // const layer1 = map.createLayer("sky", tileset, 0, 0);
+            // const layer2 = map.createLayer("water", tileset, 0, 195);
             // NOTA: El mapa de Tield debe tener el calculo de bloques para tener el mismo tamaño del proyecto.
             
-            /* env */
+        /* env */
             this.add.image(0, 0, 'bg').setOrigin(0, 0).setScrollFactor(0.5);;
-            // const layer1 = map.createLayer("water", tileset, 0, 0);
-            const layer = map.createLayer("ground", tileset, 0, 260);
+            const layer1 = map.createLayer("water", tileset, 0, 195);
+            const layer = map.createLayer("ground", tileset, 0, 195);
             layer.setScale(.5);
 
-            this.add.image(354, 360, 'tree2').setScale(.2);
-
-            igloo = this.physics.add.image(55, 435, 'igloo').setScale(.2);
+            this.add.image(180, 385, 'tree1').setScale(.5);
+            
+            igloo = this.physics.add.image(80, 403, 'igloo').setScale(.5);
             igloo.flipX = true;
             igloo.setImmovable(true);
             igloo.body.allowGravity = false;
+            
+            this.add.image(325, 218, 'tree1').setScale(.3);
+            this.add.image(100, 180, 'crystal').setScale(.5);
 
-            iceBox = this.physics.add.image(250, 100, 'icebox').setScale(.4);
+            this.add.image(50, 385, 'tree2').setScale(.5);
+            iceBox = this.physics.add.image(600, 100, 'icebox').setScale(.4);
             iceBox.setCollideWorldBounds(true);
         /* --- */
 
         /* Player */
-            player = this.physics.add.sprite(384, 200, 'player').setScale(.5);
+            player = this.physics.add.sprite(280, 400, 'player').setScale(.5);
             // player.setCollideWorldBounds(true);
             player.setSize(64, 58, false);
             /* --- */
@@ -54,6 +72,10 @@ class MainScene extends Phaser.Scene {
             /* camera */
             this.cameras.main.setBounds(0, 0, 3840, 512);
             this.cameras.main.startFollow(player, true);
+        /* --- */
+
+        /* Text */
+            // this.add.text(20, 16, 'Gamifiaciones \n IGLú', {fontFamily: 'Snowtop Caps', fontSize: "80px", fill: '#fff'});
         /* --- */
 
         /* Animations */
@@ -128,7 +150,7 @@ const config = {
     physics: {
         default: 'arcade',
         arcade: {
-            debug: true,
+            debug: false,
             gravity: { y: 350 }
         }
     }
