@@ -19,6 +19,8 @@ class MainScene extends Phaser.Scene {
         this.load.image('tree2', './assets/Object/Tree_2.png');
         this.load.image('icebox', './assets/Object/IceBox.png');
         this.load.image('crystal', './assets/Object/Crystal.png');
+        this.load.image('sign_2', './assets/Object/sign_2.png');
+        this.load.image('SnowMan', './assets/Object/SnowMan.png');        
         this.load.image('bg', './assets/BG/BG.png');
 
         loadFont('Snowtop Caps', './assets/fonts/Snowtop-Caps.ttf');
@@ -47,20 +49,22 @@ class MainScene extends Phaser.Scene {
             const layer1 = map.createLayer("water", tileset, 0, 195);
             const layer = map.createLayer("ground", tileset, 0, 195);
             layer.setScale(.5);
+            layer1.setScale(.5);
 
             this.add.image(180, 385, 'tree1').setScale(.5);
+            this.add.image(745, 300, 'sign_2').setScale(.5);
             
             igloo = this.physics.add.image(80, 403, 'igloo').setScale(.5);
             igloo.flipX = true;
             igloo.setImmovable(true);
+            igloo.setSize(370, 210, true);
             igloo.body.allowGravity = false;
             
             this.add.image(325, 218, 'tree1').setScale(.3);
             this.add.image(100, 180, 'crystal').setScale(.5);
 
             this.add.image(50, 385, 'tree2').setScale(.5);
-            iceBox = this.physics.add.image(600, 100, 'icebox').setScale(.4);
-            iceBox.setCollideWorldBounds(true);
+            iceBox = this.physics.add.image(700, 100, 'icebox').setScale(.2);
         /* --- */
 
         /* Player */
